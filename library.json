@@ -1,0 +1,40 @@
+{
+    "name": "SAMC21 CAN Library",
+    "keywords": "samc21 can",
+    "description": "This library provides connection to a CAN bus from an Atmel SAMC21",
+    "authors":
+    {
+        "name": "Scott Price",
+        "url": "http://www.hugllc.com/"
+    },
+    "version":     "0.1.0",
+    "downloadUrl": "https://github.com/hugllc/samc21_can",
+    "frameworks": "arduino",
+    "platforms": ["*"],
+    "dependencies":
+    [
+    ],
+    "export": {
+        "include":
+        [
+            "examples/*",
+            "src/*",
+            "library.json",
+            "library.properties",
+            "Readme.md"
+        ],
+        "exclude":
+        [
+            "testcode",
+            "Makefile",
+            "test"
+        ]
+    },
+        "build": {
+        "flags": [
+            "-Wall", "-Werror", "-Wformat-nonliteral",
+            "-Wpointer-arith", "-Wmissing-declarations", "-Winline", 
+            "-Wwrite-strings", "-Wno-unused-parameter", "-Wfloat-equal"
+        ]
+    }
+}

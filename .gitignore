@@ -1,32 +1,26 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
+*~ 
+build/
+*.tmp
+*.hex
+toolchain/
 *.o
-*.obj
+*.orig
+*.kate-swp
+*.kdev4
+*.old
 
-# Precompiled Headers
-*.gch
-*.pch
+.sass-cache
+.piolibdeps
+.pioenvs
+rel/
+src/HUGnetNGLibVer.h
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+*-Results.xml
+*.gcda
+*.gcno
+run_test
 
-# Fortran module files
-*.mod
-*.smod
+**/test/code
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+*.map
 
-# Executables
-*.exe
-*.out
-*.app
