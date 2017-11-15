@@ -21,7 +21,7 @@
             "src/*",
             "library.json",
             "library.properties",
-            "Readme.md"
+            "README.md"
         ],
         "exclude":
         [
