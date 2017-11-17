@@ -43,10 +43,10 @@ uint8_t MCP_CAN::begin(uint8_t idmodeset, uint8_t speedset, uint8_t clockset)
         array_size_tx : RAM_ARRAY_SIZE_TX,
         fifo_size_tx : RAM_FIFO_SIZE_TX,
 
-        buf_size_rx_fifo0 : MAX_CHAR_IN_MESSAGE,
+        buf_size_rx_fifo0 : 64,
         buf_size_rx_fifo1 : 0,
-        buf_size_rx : MAX_CHAR_IN_MESSAGE,
-        buf_size_tx : MAX_CHAR_IN_MESSAGE,
+        buf_size_rx : 64,
+        buf_size_tx : 64,
 
         /*
         using values from AT6493 (SAMC21 app note); the plus values are to add on what the MCAN driver subtracts back off
@@ -80,10 +80,12 @@ uint8_t MCP_CAN::begin(uint8_t idmodeset, uint8_t speedset, uint8_t clockset)
         GCLK->PCHCTRL[CAN0_GCLK_ID].reg = GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0;
         MCLK->AHBMASK.reg |= MCLK_AHBMASK_CAN0;
 
-        NVIC_EnableIRQ(CAN0_IRQn);
+        //NVIC_EnableIRQ(CAN0_IRQn);
         break;
+    default:
+        return CAN_FAIL;
     }
-    
+
     if (mcan_configure_msg_ram(&mcan_cfg, &mcan_msg_ram_size)) {
         Serial.println("RAM configuration succeeded");
     } else {
@@ -97,11 +99,14 @@ uint8_t MCP_CAN::begin(uint8_t idmodeset, uint8_t speedset, uint8_t clockset)
         Serial.println(ret);
         return CAN_FAIL;
     }
-    //mcan_set_tx_queue_mode(&mcan);
+    mcan_set_tx_queue_mode(&mcan);
     mcan_loopback_off(&mcan);
     mcan_set_mode(&mcan, MCAN_MODE_CAN);
     mcan_enable(&mcan);
-
+    //mcan_enable_rx_array_flag(&mcan, 0);
+    
+    
+    mcan_filter_id_mask(&mcan, 0, FILTER_1, CAN_EXT_MSG_ID, MSG_ID_ALLOW_ALL_MASK);
     
     if (mcan_is_enabled(&mcan)) {
         Serial.println("MCAN is enabled!");
@@ -138,27 +143,12 @@ uint8_t MCP_CAN::sendMsgBuf(uint32_t id, uint8_t ext, uint8_t len, uint8_t *buf)
 {
     uint8_t ret = 0xff;
     if (!mcan_is_enabled(&mcan)) {
-        Serial.println("CAN not enabled!");
-        return CAN_FAILTX;
+        return CAN_CTRLERROR;
     }
-    /*
-    txbuf = mcan_prepare_tx_buffer(&mcan, 0, id, len);
-    if (txbuf != NULL) {
-        memcpy(txbuf, buf, len);
-        mcan_send_tx_buffer(&mcan, 0);
-        ret = 0;
-    }
-    */
     if (ext) {
         id |= CAN_EXT_MSG_ID;
     }
     ret = mcan_enqueue_outgoing_msg(&mcan, id, len, buf);
-    Serial.print("Sending id: 0x");
-    Serial.print(id, HEX);
-    Serial.print("  len:");
-    Serial.print(len);
-    Serial.print("  ret:");
-    Serial.println(ret);
     if (ret != 0xFF) {
         return CAN_OK;
     }
@@ -166,28 +156,23 @@ uint8_t MCP_CAN::sendMsgBuf(uint32_t id, uint8_t ext, uint8_t len, uint8_t *buf)
 };      // Send message to transmit buffer
 uint8_t MCP_CAN::sendMsgBuf(uint32_t id, uint8_t len, uint8_t *buf)
 {
-    return 0;
+    return sendMsgBuf(id, 1, len, buf);
 };                 // Send message to transmit buffer
 uint8_t MCP_CAN::readMsgBuf(uint32_t *id, uint8_t *ext, uint8_t *len, uint8_t *buf)
 {
-    uint8_t msg_data[64];
     struct mcan_msg_info msg;
-    msg.data = msg_data;
-    bool got_data;
+    msg.data = buf;
+    msg.data_len = 8;
+    uint8_t fifo_entries;
+    uint8_t i;
     if (mcan_is_tx_complete(&mcan)) {
         mcan_clear_tx_flag(&mcan);
-        Serial.println("Clearing TX Complete Flag");
     }
-    __disable_irq();
-    if ((got_data = rx_ded_buffer_data))
-        rx_ded_buffer_data = false;
-    __enable_irq();
-    
-    if (got_data) {
-        mcan_read_rx_buffer(&mcan, RX_BUFFER_0, &msg);
+    fifo_entries = mcan_dequeue_received_msg(&mcan, 0, &msg);
+    if (fifo_entries > 0) {
         *id = mcan_get_id(msg.id);
         *len = msg.data_len;
-        memcpy(buf, msg.data, *len);
+        *ext = (msg.id & CAN_EXT_MSG_ID) == CAN_EXT_MSG_ID;
         return CAN_OK;
     }
     return CAN_NOMSG;
@@ -226,9 +211,10 @@ uint8_t MCP_CAN::disOneShotTX(void)
     return 0;
 };                                           // Disable one-shot transmission
 
-
+/*
 void CAN0_Handler(void)
 {
+    Serial.print("A");
     if (mcan_rx_array_data(&(use_object->mcan))) {
         mcan_clear_rx_array_flag(&(use_object->mcan));
         use_object->rx_ded_buffer_data = true;
@@ -239,10 +225,11 @@ void CAN0_Handler(void)
 
 void CAN1_Handler(void)
 {
+    Serial.print("B");
     if (mcan_rx_array_data(&(use_object->mcan))) {
         mcan_clear_rx_array_flag(&(use_object->mcan));
         use_object->rx_ded_buffer_data = true;
         Serial.println("Got a Packet 1!");
     }
 }
-
+*/

@@ -43,8 +43,7 @@
 #define MSG_LEN_1_CAN_FD  64
 #define MSG_LEN_2_CAN     7
 #define MSG_LEN_2_CAN_FD  48
-#define MSG_ID_2          (CAN_STD_MSG_ID | 0x444)
-#define MSG_ID_2_MASK     0x7FCul     /* bits 0 & 1 are don't care */
+#define MSG_ID_ALLOW_ALL_MASK     0x000ul     /* bits 0 & 1 are don't care */
 #define RX_BUFFER_0       0
 #define RX_BUFFER_1       1
 #define FILTER_0          0
@@ -104,7 +103,6 @@ public:
 private:
     uint32_t mcan_msg_ram[MSG_RAM_SIZE] __attribute__ ((aligned (4)));
     uint32_t mcan_msg_ram_size = ARRAY_SIZE(mcan_msg_ram);
-    //uint8_t *txbuf;
     
 };
 
