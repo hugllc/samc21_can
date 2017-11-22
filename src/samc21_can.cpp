@@ -164,7 +164,6 @@ uint8_t MCP_CAN::readMsgBuf(uint32_t *id, uint8_t *ext, uint8_t *len, uint8_t *b
     msg.data = buf;
     msg.data_len = 8;
     uint8_t fifo_entries;
-    uint8_t i;
     if (mcan_is_tx_complete(&mcan)) {
         mcan_clear_tx_flag(&mcan);
     }

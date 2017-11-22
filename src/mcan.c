@@ -55,11 +55,7 @@ Atmel's SAMC21 register definition include files have a different and peculiar s
 
 #define __SYSTEM_CLOCK (48000000)
 
-uint32_t pmc_get_gck_clock(uint32_t id)
-{
-  (void)id;
-  return __SYSTEM_CLOCK;
-}
+#define pmc_get_gck_clock(id) __SYSTEM_CLOCK
 
 #include <assert.h>
 #include <string.h>
