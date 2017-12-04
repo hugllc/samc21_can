@@ -34,8 +34,7 @@ Using the Library
 platformio platform install https://github.com/prices/platform-atmelsam
 ```
 
-#### platformio.ini ####
-The platformio.ini file should look like this:
+#### platformio.ini Example ####
 
 ```ini
 [platformio]
@@ -59,7 +58,40 @@ Then for the code
 ```cpp
 #include <samc21_can.h>
 
+SAMC21_CAN can(0);
 
+void setup()
+{
+    uint8_t ret;
+    ret = can.begin(MCP_ANY, CAN_125KBPS, MCP_8MHZ);
+    if (ret == CAN_OK) {
+        Serial.println("CAN Initialized Successfully!");
+    } else {
+        Serial.println("Error Initializing CAN...");
+    }
+}
+
+void loop()
+{
+    uint8_t ret;
+    uint32_t id;
+    uint8_t len;
+    uint8_t buf[8];
+    uint8_t i;
+    
+    ret = can.readMsgBuf(id, len, buffer);
+    if (ret == CAN_OK) {
+        Serial.print("Got a message from: ");
+        Serial.print(id);
+        Serial.print("  Length: ");
+        Serial.print(len);
+        Serial.print("  Data: ");
+        for (i = 0; i < len; i++) {
+            Serial.print(buf[i], HEX);
+        }
+        Serial.println("");
+    }
+}
 
 
 ```
