@@ -9,7 +9,7 @@
 #include "samc21_can.h"
 #include "Arduino.h"
 
-MCP_CAN *use_object;
+SAMC21_CAN *use_object;
 
 
 /**
@@ -19,13 +19,13 @@ MCP_CAN *use_object;
 *
 * @return void
 */
-MCP_CAN::MCP_CAN(uint8_t _CS)
+SAMC21_CAN::SAMC21_CAN(uint8_t _CS)
 : rx_ded_buffer_data(false)
 {
     use_object = this;
 };
 
-uint8_t MCP_CAN::begin(uint8_t idmodeset, uint8_t speedset, uint8_t clockset)
+uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint8_t speedset, uint8_t clockset)
 {
     uint8_t ret;
     const struct mcan_config mcan_cfg = {
@@ -118,28 +118,28 @@ uint8_t MCP_CAN::begin(uint8_t idmodeset, uint8_t speedset, uint8_t clockset)
     
     
 };
-uint8_t MCP_CAN::init_Mask(uint8_t num, uint8_t ext, uint32_t ulData)
+uint8_t SAMC21_CAN::init_Mask(uint8_t num, uint8_t ext, uint32_t ulData)
 {
     return 0;
 };              // Initilize Mask(s)
-uint8_t MCP_CAN::init_Mask(uint8_t num, uint32_t ulData)
+uint8_t SAMC21_CAN::init_Mask(uint8_t num, uint32_t ulData)
 {
     return 0;
 };                          // Initilize Mask(s)
-uint8_t MCP_CAN::init_Filt(uint8_t num, uint8_t ext, uint32_t ulData)
+uint8_t SAMC21_CAN::init_Filt(uint8_t num, uint8_t ext, uint32_t ulData)
 {
     return 0;
 };              // Initilize Filter(s)
-uint8_t MCP_CAN::init_Filt(uint8_t num, uint32_t ulData)
+uint8_t SAMC21_CAN::init_Filt(uint8_t num, uint32_t ulData)
 {
     return 0;
 }; // Initilize Filter(s)
-uint8_t MCP_CAN::setMode(uint8_t opMode)
+uint8_t SAMC21_CAN::setMode(uint8_t opMode)
 {
     return MCP_NORMAL;
 };                                        // Set operational mode
 
-uint8_t MCP_CAN::sendMsgBuf(uint32_t id, uint8_t ext, uint8_t len, uint8_t *buf)
+uint8_t SAMC21_CAN::sendMsgBuf(uint32_t id, uint8_t ext, uint8_t len, uint8_t *buf)
 {
     uint8_t ret = 0xff;
     if (!mcan_is_enabled(&mcan)) {
@@ -154,11 +154,11 @@ uint8_t MCP_CAN::sendMsgBuf(uint32_t id, uint8_t ext, uint8_t len, uint8_t *buf)
     }
     return CAN_FAILTX;
 };      // Send message to transmit buffer
-uint8_t MCP_CAN::sendMsgBuf(uint32_t id, uint8_t len, uint8_t *buf)
+uint8_t SAMC21_CAN::sendMsgBuf(uint32_t id, uint8_t len, uint8_t *buf)
 {
     return sendMsgBuf(id, 1, len, buf);
 };                 // Send message to transmit buffer
-uint8_t MCP_CAN::readMsgBuf(uint32_t *id, uint8_t *ext, uint8_t *len, uint8_t *buf)
+uint8_t SAMC21_CAN::readMsgBuf(uint32_t *id, uint8_t *ext, uint8_t *len, uint8_t *buf)
 {
     struct mcan_msg_info msg;
     msg.data = buf;
@@ -176,36 +176,36 @@ uint8_t MCP_CAN::readMsgBuf(uint32_t *id, uint8_t *ext, uint8_t *len, uint8_t *b
     }
     return CAN_NOMSG;
 };   // Read message from receive buffer
-uint8_t MCP_CAN::readMsgBuf(uint32_t *id, uint8_t *len, uint8_t *buf)
+uint8_t SAMC21_CAN::readMsgBuf(uint32_t *id, uint8_t *len, uint8_t *buf)
 {
     uint8_t ext;
     return readMsgBuf(id, &ext, len, buf);
 };               // Read message from receive buffer
-uint8_t MCP_CAN::checkReceive(void)
+uint8_t SAMC21_CAN::checkReceive(void)
 {
     return 0;
 };                                           // Check for received data
-uint8_t MCP_CAN::checkError(void)
+uint8_t SAMC21_CAN::checkError(void)
 {
     return 0;
 };                                             // Check for errors
-uint8_t MCP_CAN::getError(void)
+uint8_t SAMC21_CAN::getError(void)
 {
     return 0;
 };                                               // Check for errors
-uint8_t MCP_CAN::errorCountRX(void)
+uint8_t SAMC21_CAN::errorCountRX(void)
 {
     return 0;
 };                                           // Get error count
-uint8_t MCP_CAN::errorCountTX(void)
+uint8_t SAMC21_CAN::errorCountTX(void)
 {
     return 0;
 };                                           // Get error count
-uint8_t MCP_CAN::enOneShotTX(void)
+uint8_t SAMC21_CAN::enOneShotTX(void)
 {
     return 0;
 };                                            // Enable one-shot transmission
-uint8_t MCP_CAN::disOneShotTX(void)
+uint8_t SAMC21_CAN::disOneShotTX(void)
 {
     return 0;
 };                                           // Disable one-shot transmission
