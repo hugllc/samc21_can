@@ -47,7 +47,7 @@ Atmel's SAMC21 register definition include files have a different and peculiar s
 /*----------------------------------------------------------------------------
  *        Headers
  *----------------------------------------------------------------------------*/
-#include <samc21/include/samc21.h>
+#include <sam.h>
 #include <stdbool.h>
 
 #include "mcan.h"
