@@ -25,7 +25,7 @@ SAMC21_CAN::SAMC21_CAN(uint8_t _CS)
     use_object = this;
 };
 
-uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint8_t speedset, uint8_t clockset)
+uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint32_t speedset, uint8_t clockset)
 {
     uint8_t ret;
     const struct mcan_config mcan_cfg = {
@@ -51,7 +51,7 @@ uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint8_t speedset, uint8_t clockset)
         /*
         using values from AT6493 (SAMC21 app note); the plus values are to add on what the MCAN driver subtracts back off
         */
-        bit_rate : 125000,
+        bit_rate : speedset,
         quanta_before_sp : 10 + 2,
         quanta_after_sp : 3 + 1,
 
@@ -59,7 +59,7 @@ uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint8_t speedset, uint8_t clockset)
         AT6493 (SAMC21 app note) 'fast' values were unhelpfully the same as normal speed; these are for double (1MBit)
                 the maximum peripheral clock of 48MHz on the SAMC21 does restrict us from very high rates
         */
-        bit_rate_fd : 125000,
+        bit_rate_fd : speedset,
         quanta_before_sp_fd : 10 + 2,
         quanta_after_sp_fd : 3 + 1,
 
