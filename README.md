@@ -22,13 +22,39 @@ For platformio it is available here:
 
 https://github.com/prices/platform-atmelsam
 
-```sh
-platformio platform install https://github.com/prices/platform-atmelsam
-```
 
 
 Using the Library
 ----------------
+
+### Platformio ###
+
+#### Installing ####
+```sh
+platformio platform install https://github.com/prices/platform-atmelsam
+```
+
+#### platformio.ini ####
+The platformio.ini file should look like this:
+
+```ini
+[platformio]
+env_default = samc21
+
+[env:samc21]
+platform = atmelsam
+framework = arduino
+board = samc21_xpro
+
+lib_deps = https://github.com/hugllc/samc21_can.git
+
+```
+
+
+#### Code ####
+
+Then for the code
+
 
 ```cpp
 #include <samc21_can.h>
