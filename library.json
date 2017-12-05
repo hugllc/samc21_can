@@ -1,5 +1,5 @@
 {
-    "name": "SAMC21 CAN Library",
+    "name": "SAMC21_CAN",
     "keywords": "samc21 can",
     "description": "This library provides connection to a CAN bus from an Atmel SAMC21",
     "authors":
