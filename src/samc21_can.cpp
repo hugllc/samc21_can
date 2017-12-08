@@ -20,7 +20,7 @@ SAMC21_CAN *use_object;
 * @return void
 */
 SAMC21_CAN::SAMC21_CAN(uint8_t _CS)
-: rx_ded_buffer_data(false)
+: rx_ded_buffer_data(false), _idmode(MCP_ANY), _mode(MCP_LOOPBACK)
 {
     use_object = this;
 };
@@ -28,6 +28,7 @@ SAMC21_CAN::SAMC21_CAN(uint8_t _CS)
 uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint32_t speedset, uint8_t clockset)
 {
     uint8_t ret;
+    _idmode = idmodeset;
     const struct mcan_config mcan_cfg = {
 
         id : ID_CAN0,
@@ -100,13 +101,20 @@ uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint32_t speedset, uint8_t clockset
         return CAN_FAIL;
     }
     mcan_set_tx_queue_mode(&mcan);
-    mcan_loopback_off(&mcan);
+    if (_mode == MCP_LOOPBACK) {
+        mcan_loopback_on(&mcan);
+    } else {
+        mcan_loopback_off(&mcan);
+    }
     mcan_set_mode(&mcan, MCAN_MODE_CAN);
     mcan_enable(&mcan);
     //mcan_enable_rx_array_flag(&mcan, 0);
     
-    
-    mcan_filter_id_mask(&mcan, 0, FILTER_1, CAN_EXT_MSG_ID, MSG_ID_ALLOW_ALL_MASK);
+    // MCP_ANY means filters don't matter
+    if (_idmode == MCP_ANY) {
+        init_Mask(FILTER_0, (CAN_EXT_MSG_ID | MSG_ID_ALLOW_ALL_MASK));
+        init_Mask(FILTER_1, (CAN_STD_MSG_ID | MSG_ID_ALLOW_ALL_MASK));
+    }
     
     if (mcan_is_enabled(&mcan)) {
         Serial.println("MCAN is enabled!");
@@ -120,23 +128,74 @@ uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint32_t speedset, uint8_t clockset
 };
 uint8_t SAMC21_CAN::init_Mask(uint8_t num, uint8_t ext, uint32_t ulData)
 {
-    return 0;
+    uint32_t id;
+    if (ext) {
+        id = 0x1fffffff;
+        ulData &= id;
+        id |= CAN_EXT_MSG_ID;
+        if (ext >= mcan.cfg.array_size_filt_ext) {
+            return MCP2515_FAIL;
+        }
+
+    } else {
+        id = 0x7ff;
+        ulData &= id;
+        id |= CAN_STD_MSG_ID;
+        if (ext >= mcan.cfg.array_size_filt_std) {
+            return MCP2515_FAIL;
+        }
+    }
+    mcan_filter_id_mask(&mcan, 0, num, id, ulData);
+    
+    return MCP2515_OK;
 };              // Initilize Mask(s)
 uint8_t SAMC21_CAN::init_Mask(uint8_t num, uint32_t ulData)
 {
-    return 0;
+    return init_Mask(num, ((ulData & CAN_EXT_MSG_ID) == CAN_EXT_MSG_ID), ulData);
 };                          // Initilize Mask(s)
 uint8_t SAMC21_CAN::init_Filt(uint8_t num, uint8_t ext, uint32_t ulData)
 {
-    return 0;
+    uint32_t mask;
+    if (ext) {
+        mask = 0x1fffffff;
+        if (ext >= mcan.cfg.array_size_filt_ext) {
+            return MCP2515_FAIL;
+        }
+
+    } else {
+        mask = 0x7ff;
+        if (ext >= mcan.cfg.array_size_filt_std) {
+            return MCP2515_FAIL;
+        }
+    }
+    ulData &= mask;
+    mcan_filter_id_mask(&mcan, 0, num, ulData, mask);
+    
+    return MCP2515_OK;
 };              // Initilize Filter(s)
 uint8_t SAMC21_CAN::init_Filt(uint8_t num, uint32_t ulData)
 {
-    return 0;
+    return init_Filt(num, ((ulData & CAN_EXT_MSG_ID) == CAN_EXT_MSG_ID), ulData);
 }; // Initilize Filter(s)
 uint8_t SAMC21_CAN::setMode(uint8_t opMode)
 {
-    return MCP_NORMAL;
+    if ((opMode == MCP_LOOPBACK) && (_mode != MCP_LOOPBACK)) {
+        _mode = opMode;
+        mcan_disable(&mcan);
+        mcan_reconfigure(&mcan);
+        mcan_loopback_on(&mcan);
+        mcan_enable(&mcan);
+    } else if ((opMode == MCP_NORMAL) && (_mode != MCP_NORMAL)) {
+        _mode = opMode;
+        mcan_disable(&mcan);
+        mcan_reconfigure(&mcan);
+        mcan_loopback_off(&mcan);
+        mcan_enable(&mcan);
+    } else {
+        return MCP2515_FAIL;
+    }
+
+    return MCP2515_OK;
 };                                        // Set operational mode
 
 uint8_t SAMC21_CAN::sendMsgBuf(uint32_t id, uint8_t ext, uint8_t len, uint8_t *buf)
@@ -183,7 +242,7 @@ uint8_t SAMC21_CAN::readMsgBuf(uint32_t *id, uint8_t *len, uint8_t *buf)
 };               // Read message from receive buffer
 uint8_t SAMC21_CAN::checkReceive(void)
 {
-    return 0;
+    return (uint8_t)mcan_rx_fifo_data(&mcan, 0);
 };                                           // Check for received data
 uint8_t SAMC21_CAN::checkError(void)
 {
@@ -209,11 +268,10 @@ uint8_t SAMC21_CAN::disOneShotTX(void)
 {
     return 0;
 };                                           // Disable one-shot transmission
-
 /*
 void CAN0_Handler(void)
 {
-    Serial.print("A");
+    Serial.println("A");
     if (mcan_rx_array_data(&(use_object->mcan))) {
         mcan_clear_rx_array_flag(&(use_object->mcan));
         use_object->rx_ded_buffer_data = true;
@@ -224,7 +282,7 @@ void CAN0_Handler(void)
 
 void CAN1_Handler(void)
 {
-    Serial.print("B");
+    Serial.println("B");
     if (mcan_rx_array_data(&(use_object->mcan))) {
         mcan_clear_rx_array_flag(&(use_object->mcan));
         use_object->rx_ded_buffer_data = true;

@@ -103,6 +103,8 @@ public:
 private:
     uint32_t mcan_msg_ram[MSG_RAM_SIZE] __attribute__ ((aligned (4)));
     uint32_t mcan_msg_ram_size = ARRAY_SIZE(mcan_msg_ram);
+    uint8_t _idmode;
+    uint8_t _mode;
     
 };
 
