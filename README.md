@@ -99,7 +99,7 @@ void loop()
 
 License
 -----------------
-GPL V3
+LGPL V3
 
 
 Acknowledgements
