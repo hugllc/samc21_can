@@ -4,7 +4,7 @@ This was retrieved from http://github.com/majbthrd/SAMC21demoCAN 11/13/2017 SLP
 
 This code was originally written for the SAMA5D2, but has been modified to work with the SAMC21.
 
-The peripheral is the same (except for Message RAM addressing), but 
+The peripheral is the same (except for Message RAM addressing), but
 Atmel's SAMC21 register definition include files have a different and peculiar syntax.
 */
 
@@ -64,7 +64,7 @@ Atmel's SAMC21 register definition include files have a different and peculiar s
 extern "C" {
 #endif
 
-    
+
 #define WEAK __attribute__((weak))
 #define CONSTRUCTOR __attribute__((constructor))
 #define SECTION(a) __attribute__((__section__(a)))
@@ -88,30 +88,29 @@ extern "C" {
         (a) = (b);      \
         (b) = _swp; } while (0)
 
-        
+
 
 /*----------------------------------------------------------------------------
  *         Definitions
  *----------------------------------------------------------------------------*/
 
-enum mcan_can_mode
-{
-	/* ISO 11898-1 CAN mode */
-	MCAN_MODE_CAN,
+enum mcan_can_mode {
+    /* ISO 11898-1 CAN mode */
+    MCAN_MODE_CAN,
 
-	/* Long CAN FD frame.
-	 * - TX and RX payloads up to 64 bytes.
-	 * - Slow transmitter: TX frames are sent at constant bit rate.
-	 * - Fast receiver: both constant-rate (slow) and dual-rate (fast)
-	 *   RX frames are supported and received. */
-	MCAN_MODE_EXT_LEN_CONST_RATE,
+    /* Long CAN FD frame.
+     * - TX and RX payloads up to 64 bytes.
+     * - Slow transmitter: TX frames are sent at constant bit rate.
+     * - Fast receiver: both constant-rate (slow) and dual-rate (fast)
+     *   RX frames are supported and received. */
+    MCAN_MODE_EXT_LEN_CONST_RATE,
 
-	/* Long and fast CAN FD frame.
-	 * - TX and RX payloads up to 64 bytes.
-	 * - Fast transmitter: control, data and CRC fields are transmitted at a
-	 *   higher bit rate.
-	 * - Fast receiver. */
-	MCAN_MODE_EXT_LEN_DUAL_RATE,
+    /* Long and fast CAN FD frame.
+     * - TX and RX payloads up to 64 bytes.
+     * - Fast transmitter: control, data and CRC fields are transmitted at a
+     *   higher bit rate.
+     * - Fast receiver. */
+    MCAN_MODE_EXT_LEN_DUAL_RATE,
 };
 
 /* Flag signalling a standard (11-bit) message identifiers */
@@ -119,85 +118,82 @@ enum mcan_can_mode
 /* Flag to be bitwise or'ed to extended (29-bit) message identifiers */
 #define CAN_EXT_MSG_ID (0x1u << 30)
 
-struct mcan_msg_info
-{
-	uint32_t id;
-	uint32_t timestamp;
-	uint8_t *data;
-	uint8_t full_len;
-	uint8_t data_len;
+struct mcan_msg_info {
+    uint32_t id;
+    uint32_t timestamp;
+    uint8_t *data;
+    uint8_t full_len;
+    uint8_t data_len;
 };
 
-struct mcan_config
-{
-	uint32_t id;                  /* peripheral ID (ID_xxx) */
-	Can *regs;                   /* set of MCAN hardware registers */
-	uint32_t *msg_ram;            /* base address of the Message RAM to be
-	                               * assigned to this MCAN instance */
+struct mcan_config {
+    uint32_t id;                  /* peripheral ID (ID_xxx) */
+    Can *regs;                   /* set of MCAN hardware registers */
+    uint32_t *msg_ram;            /* base address of the Message RAM to be
+                                   * assigned to this MCAN instance */
 
-	uint8_t array_size_filt_std;  /* # of 11-bit Message ID Rx Filters */
-	uint8_t array_size_filt_ext;  /* # of 29-bit Message ID Rx Filters */
-	uint8_t fifo_size_rx0;        /* # of Rx Buffers in Rx FIFO 0 */
-	uint8_t fifo_size_rx1;        /* # of Rx Buffers in Rx FIFO 1 */
-	uint8_t array_size_rx;        /* # of dedicated Rx Buffers */
-	uint8_t fifo_size_tx_evt;     /* # of Tx Event Elements in the Tx Event
-	                               * FIFO */
-	uint8_t array_size_tx;        /* # of dedicated Tx Buffers */
-	uint8_t fifo_size_tx;         /* # of Tx Buffers in the Tx FIFO or Tx
-	                               * Queue */
+    uint8_t array_size_filt_std;  /* # of 11-bit Message ID Rx Filters */
+    uint8_t array_size_filt_ext;  /* # of 29-bit Message ID Rx Filters */
+    uint8_t fifo_size_rx0;        /* # of Rx Buffers in Rx FIFO 0 */
+    uint8_t fifo_size_rx1;        /* # of Rx Buffers in Rx FIFO 1 */
+    uint8_t array_size_rx;        /* # of dedicated Rx Buffers */
+    uint8_t fifo_size_tx_evt;     /* # of Tx Event Elements in the Tx Event
+                                   * FIFO */
+    uint8_t array_size_tx;        /* # of dedicated Tx Buffers */
+    uint8_t fifo_size_tx;         /* # of Tx Buffers in the Tx FIFO or Tx
+                                   * Queue */
 
-	uint8_t buf_size_rx_fifo0;    /* size of the data field in each Rx
-	                               * Buffer of Rx FIFO 0, in bytes */
-	uint8_t buf_size_rx_fifo1;    /* size of the data field in each Rx
-	                               * Buffer of Rx FIFO 1, in bytes */
-	uint8_t buf_size_rx;          /* size of the data field in each
-	                               * dedicated Rx Buffer, in bytes */
-	uint8_t buf_size_tx;          /* size of the data field in each Tx
-	                               * Buffer, in bytes. Applies to all Tx
-	                               * Buffers, dedicated and in Tx FIFO /
-	                               * Queue. */
+    uint8_t buf_size_rx_fifo0;    /* size of the data field in each Rx
+                                   * Buffer of Rx FIFO 0, in bytes */
+    uint8_t buf_size_rx_fifo1;    /* size of the data field in each Rx
+                                   * Buffer of Rx FIFO 1, in bytes */
+    uint8_t buf_size_rx;          /* size of the data field in each
+                                   * dedicated Rx Buffer, in bytes */
+    uint8_t buf_size_tx;          /* size of the data field in each Tx
+                                   * Buffer, in bytes. Applies to all Tx
+                                   * Buffers, dedicated and in Tx FIFO /
+                                   * Queue. */
 
-	uint32_t bit_rate;            /* requested CAN bit rate in CAN mode,
-	                               * in bps */
-	uint16_t quanta_before_sp;    /* duration of the time segment before the
-	                               * sample point (Sync_Seg + Prop_Seg +
-	                               * Phase_Seg1), while in CAN mode,
-	                               * expressed in CAN time quanta */
-	uint8_t quanta_after_sp;      /* duration of the time segment after the
-	                               * sample point (Phase_Seg2), while in CAN
-	                               * mode, expressed in CAN time quanta */
+    uint32_t bit_rate;            /* requested CAN bit rate in CAN mode,
+                                   * in bps */
+    uint16_t quanta_before_sp;    /* duration of the time segment before the
+                                   * sample point (Sync_Seg + Prop_Seg +
+                                   * Phase_Seg1), while in CAN mode,
+                                   * expressed in CAN time quanta */
+    uint8_t quanta_after_sp;      /* duration of the time segment after the
+                                   * sample point (Phase_Seg2), while in CAN
+                                   * mode, expressed in CAN time quanta */
 
-	uint32_t bit_rate_fd;         /* requested CAN bit rate in fast CAN FD
-	                               * mode, in bps */
-	uint8_t quanta_before_sp_fd;  /* duration of the time segment before the
-	                               * sample point (Sync_Seg + Prop_Seg +
-	                               * Phase_Seg1), while in fast CAN FD mode,
-	                               * expressed in CAN time quanta */
-	uint8_t quanta_after_sp_fd;   /* duration of the time segment after the
-	                               * sample point (Phase_Seg2), while in
-	                               * fast CAN FD mode, expressed in CAN time
-	                               * quanta */
+    uint32_t bit_rate_fd;         /* requested CAN bit rate in fast CAN FD
+                                   * mode, in bps */
+    uint8_t quanta_before_sp_fd;  /* duration of the time segment before the
+                                   * sample point (Sync_Seg + Prop_Seg +
+                                   * Phase_Seg1), while in fast CAN FD mode,
+                                   * expressed in CAN time quanta */
+    uint8_t quanta_after_sp_fd;   /* duration of the time segment after the
+                                   * sample point (Phase_Seg2), while in
+                                   * fast CAN FD mode, expressed in CAN time
+                                   * quanta */
 
-	uint8_t quanta_sync_jump;     /* duration of a (re)synchronization jump,
-	                               * while in CAN mode, expressed in CAN
-	                               * time quanta */
-	uint8_t quanta_sync_jump_fd;  /* duration of a (re)synchronization jump,
-	                               * while in fast CAN FD mode, expressed in
-	                               * CAN time quanta */
+    uint8_t quanta_sync_jump;     /* duration of a (re)synchronization jump,
+                                   * while in CAN mode, expressed in CAN
+                                   * time quanta */
+    uint8_t quanta_sync_jump_fd;  /* duration of a (re)synchronization jump,
+                                   * while in fast CAN FD mode, expressed in
+                                   * CAN time quanta */
 };
 
 /* This structure is private to the MCAN Driver.
  * Allocate it but ignore its members. */
-struct mcan_set
-{
-	struct mcan_config cfg;
-	uint32_t *ram_filt_std;
-	uint32_t *ram_filt_ext;
-	uint32_t *ram_fifo_rx0;
-	uint32_t *ram_fifo_rx1;
-	uint32_t *ram_array_rx;
-	uint32_t *ram_fifo_tx_evt;
-	uint32_t *ram_array_tx;
+struct mcan_set {
+    struct mcan_config cfg;
+    uint32_t *ram_filt_std;
+    uint32_t *ram_filt_ext;
+    uint32_t *ram_fifo_rx0;
+    uint32_t *ram_fifo_rx1;
+    uint32_t *ram_array_rx;
+    uint32_t *ram_fifo_tx_evt;
+    uint32_t *ram_array_tx;
 };
 
 /*----------------------------------------------------------------------------
@@ -206,62 +202,58 @@ struct mcan_set
 
 static inline bool mcan_is_enabled(const struct mcan_set *set)
 {
-	Can *mcan = set->cfg.regs;
-	return (!(mcan->CCCR.reg & CAN_CCCR_INIT));
+    Can *mcan = set->cfg.regs;
+    return (!(mcan->CCCR.reg & CAN_CCCR_INIT));
 }
 
 static inline bool mcan_is_extended_id(uint32_t msg_id)
 {
-	return msg_id & CAN_EXT_MSG_ID ? true : false;
+    return msg_id & CAN_EXT_MSG_ID ? true : false;
 }
 
 static inline uint32_t mcan_get_id(uint32_t msg_id)
 {
-	return msg_id & CAN_EXT_MSG_ID ? msg_id & 0x1fffffff : msg_id & 0x7ff;
+    return msg_id & CAN_EXT_MSG_ID ? msg_id & 0x1fffffff : msg_id & 0x7ff;
 }
 
 static inline bool mcan_is_tx_complete(const struct mcan_set *set)
 {
-	Can *mcan = set->cfg.regs;
-	return mcan->IR.reg & CAN_IR_TC ? true : false;
+    Can *mcan = set->cfg.regs;
+    return mcan->IR.reg & CAN_IR_TC ? true : false;
 }
 
 static inline void mcan_clear_tx_flag(const struct mcan_set *set)
 {
-	Can *mcan = set->cfg.regs;
-	mcan->IR.reg = CAN_IR_TC;
+    Can *mcan = set->cfg.regs;
+    mcan->IR.reg = CAN_IR_TC;
 }
 
 static inline bool mcan_rx_array_data(const struct mcan_set *set)
 {
-	Can *mcan = set->cfg.regs;
-	return mcan->IR.reg & CAN_IR_DRX ? true : false;
+    Can *mcan = set->cfg.regs;
+    return mcan->IR.reg & CAN_IR_DRX ? true : false;
 }
 
 static inline void mcan_clear_rx_array_flag(const struct mcan_set *set)
 {
-	Can *mcan = set->cfg.regs;
-	mcan->IR.reg = CAN_IR_DRX;
+    Can *mcan = set->cfg.regs;
+    mcan->IR.reg = CAN_IR_DRX;
 }
 
 static inline bool mcan_rx_fifo_data(const struct mcan_set *set, uint8_t fifo)
 {
-	assert(fifo == 0 || fifo == 1);
-
-	Can *mcan = set->cfg.regs;
-
-	return mcan->IR.reg & (fifo ? CAN_IR_RF1N : CAN_IR_RF0N) ? true
-	    : false;
+    assert(fifo == 0 || fifo == 1);
+    Can *mcan = set->cfg.regs;
+    return mcan->IR.reg & (fifo ? CAN_IR_RF1N : CAN_IR_RF0N) ? true
+           : false;
 }
 
 static inline void mcan_clear_rx_fifo_flag(const struct mcan_set *set,
-    uint8_t fifo)
+        uint8_t fifo)
 {
-	assert(fifo == 0 || fifo == 1);
-
-	Can *mcan = set->cfg.regs;
-
-	mcan->IR.reg = fifo ? CAN_IR_RF1N : CAN_IR_RF0N;
+    assert(fifo == 0 || fifo == 1);
+    Can *mcan = set->cfg.regs;
+    mcan->IR.reg = fifo ? CAN_IR_RF1N : CAN_IR_RF0N;
 }
 
 /**
@@ -374,8 +366,8 @@ void mcan_enable_rx_array_flag(struct mcan_set *set, uint8_t int_line);
  * \param len  Data length, in bytes.
  * \return Address of data byte 0, part of the transmit buffer.
  */
-uint8_t * mcan_prepare_tx_buffer(struct mcan_set *set, uint8_t buf_idx,
-    uint32_t id, uint8_t len);
+uint8_t *mcan_prepare_tx_buffer(struct mcan_set *set, uint8_t buf_idx,
+                                uint32_t id, uint8_t len);
 
 /**
  * \brief Start the transmission of a Dedicated TX Buffer.
@@ -395,7 +387,7 @@ void mcan_send_tx_buffer(struct mcan_set *set, uint8_t buf_idx);
  * Or 0xff if the TX FIFO / queue was full, or an error occurred.
  */
 uint8_t mcan_enqueue_outgoing_msg(struct mcan_set *set, uint32_t id,
-     uint8_t len, const uint8_t *data);
+                                  uint8_t len, const uint8_t *data);
 
 /**
  * \brief Check if message transmitted from the specified TX Buffer, either
@@ -416,7 +408,7 @@ bool mcan_is_buffer_sent(const struct mcan_set *set, uint8_t buf_idx);
  * to be accepted.
  */
 void mcan_filter_single_id(struct mcan_set *set, uint8_t buf_idx,
-    uint8_t filter, uint32_t id);
+                           uint8_t filter, uint32_t id);
 
 /**
  * \brief Configure classic RX filter.
@@ -429,7 +421,7 @@ void mcan_filter_single_id(struct mcan_set *set, uint8_t buf_idx,
  * \param mask  Message identifier mask to be matched.
  */
 void mcan_filter_id_mask(struct mcan_set *set, uint8_t fifo, uint8_t filter,
-    uint32_t id, uint32_t mask);
+                         uint32_t id, uint32_t mask);
 
 /**
  * \brief Check whether some data has been received into the specified RX
@@ -451,7 +443,7 @@ bool mcan_rx_buffer_data(const struct mcan_set *set, uint8_t buf_idx);
  * msg->data is not null and if msg->data_len is large enough.
  */
 void mcan_read_rx_buffer(struct mcan_set *set, uint8_t buf_idx,
-    struct mcan_msg_info *msg);
+                         struct mcan_msg_info *msg);
 
 /**
  * \brief Detach one received message from the specified RX FIFO, and copy it to
@@ -469,7 +461,7 @@ void mcan_read_rx_buffer(struct mcan_set *set, uint8_t buf_idx,
  *               or more entries upon exit.
  */
 uint8_t mcan_dequeue_received_msg(struct mcan_set *set, uint8_t fifo,
-    struct mcan_msg_info *msg);
+                                  struct mcan_msg_info *msg);
 
 #ifdef __cplusplus
 }

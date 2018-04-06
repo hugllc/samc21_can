@@ -20,7 +20,7 @@ SAMC21_CAN *use_object;
 * @return void
 */
 SAMC21_CAN::SAMC21_CAN(uint8_t _CS)
-: rx_ded_buffer_data(false), _idmode(MCP_ANY), _mode(MCP_LOOPBACK)
+    : rx_ded_buffer_data(false), _idmode(MCP_ANY), _mode(MCP_LOOPBACK), _cs(_CS)
 {
     use_object = this;
 };
@@ -31,18 +31,27 @@ uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint32_t speedset, uint8_t clockset
     _idmode = idmodeset;
     const struct mcan_config mcan_cfg = {
 
-        id : ID_CAN0,
-        regs : CAN0,
-        msg_ram : mcan_msg_ram,
+id :
+        ID_CAN0,
+regs :
+        CAN0,
+msg_ram :
+        mcan_msg_ram,
 
-        array_size_filt_std : RAM_ARRAY_SIZE_FILT_STD,
-        array_size_filt_ext : RAM_ARRAY_SIZE_FILT_EXT,
-        fifo_size_rx0 : RAM_FIFO_SIZE_RX0,
+array_size_filt_std :
+        RAM_ARRAY_SIZE_FILT_STD,
+array_size_filt_ext :
+        RAM_ARRAY_SIZE_FILT_EXT,
+fifo_size_rx0 :
+        RAM_FIFO_SIZE_RX0,
         fifo_size_rx1 : 0,
-        array_size_rx : RAM_ARRAY_SIZE_RX,
+array_size_rx :
+        RAM_ARRAY_SIZE_RX,
         fifo_size_tx_evt : 0,
-        array_size_tx : RAM_ARRAY_SIZE_TX,
-        fifo_size_tx : RAM_FIFO_SIZE_TX,
+array_size_tx :
+        RAM_ARRAY_SIZE_TX,
+fifo_size_tx :
+        RAM_FIFO_SIZE_TX,
 
         buf_size_rx_fifo0 : 64,
         buf_size_rx_fifo1 : 0,
@@ -52,7 +61,8 @@ uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint32_t speedset, uint8_t clockset
         /*
         using values from AT6493 (SAMC21 app note); the plus values are to add on what the MCAN driver subtracts back off
         */
-        bit_rate : speedset,
+bit_rate :
+        speedset,
         quanta_before_sp : 10 + 2,
         quanta_after_sp : 3 + 1,
 
@@ -60,33 +70,28 @@ uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint32_t speedset, uint8_t clockset
         AT6493 (SAMC21 app note) 'fast' values were unhelpfully the same as normal speed; these are for double (1MBit)
                 the maximum peripheral clock of 48MHz on the SAMC21 does restrict us from very high rates
         */
-        bit_rate_fd : speedset,
+bit_rate_fd :
+        speedset,
         quanta_before_sp_fd : 10 + 2,
         quanta_after_sp_fd : 3 + 1,
 
         quanta_sync_jump : 3 + 1,
         quanta_sync_jump_fd : 3 + 1,
     };
-    
-    
-    switch (mcan_cfg.id)
-    {
-    case ID_CAN0:
-        PORT->Group[0].DIRSET.reg = PORT_PA24;
-        PORT->Group[0].DIRCLR.reg = PORT_PA25;
-        PORT->Group[0].PINCFG[24].reg = PORT_PINCFG_INEN | PORT_PINCFG_PMUXEN;
-        PORT->Group[0].PINCFG[25].reg = PORT_PINCFG_INEN | PORT_PINCFG_PMUXEN;
-        PORT->Group[0].PMUX[24 / 2].reg = PORT_PMUX_PMUXE(6 /* CAN0 G */) | PORT_PMUX_PMUXO(6 /* CAN0 G */); /* have to write odd and even at once */
-
-        GCLK->PCHCTRL[CAN0_GCLK_ID].reg = GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0;
-        MCLK->AHBMASK.reg |= MCLK_AHBMASK_CAN0;
-
-        //NVIC_EnableIRQ(CAN0_IRQn);
-        break;
-    default:
-        return CAN_FAIL;
+    switch (mcan_cfg.id) {
+        case ID_CAN0:
+            PORT->Group[0].DIRSET.reg = PORT_PA24;
+            PORT->Group[0].DIRCLR.reg = PORT_PA25;
+            PORT->Group[0].PINCFG[24].reg = PORT_PINCFG_INEN | PORT_PINCFG_PMUXEN;
+            PORT->Group[0].PINCFG[25].reg = PORT_PINCFG_INEN | PORT_PINCFG_PMUXEN;
+            PORT->Group[0].PMUX[24 / 2].reg = PORT_PMUX_PMUXE(6 /* CAN0 G */) | PORT_PMUX_PMUXO(6 /* CAN0 G */); /* have to write odd and even at once */
+            GCLK->PCHCTRL[CAN0_GCLK_ID].reg = GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0;
+            MCLK->AHBMASK.reg |= MCLK_AHBMASK_CAN0;
+            //NVIC_EnableIRQ(CAN0_IRQn);
+            break;
+        default:
+            return CAN_FAIL;
     }
-
     if (mcan_configure_msg_ram(&mcan_cfg, &mcan_msg_ram_size)) {
         Serial.println("RAM configuration succeeded");
     } else {
@@ -108,23 +113,23 @@ uint8_t SAMC21_CAN::begin(uint8_t idmodeset, uint32_t speedset, uint8_t clockset
     }
     mcan_set_mode(&mcan, MCAN_MODE_CAN);
     mcan_enable(&mcan);
-    //mcan_enable_rx_array_flag(&mcan, 0);
     
+    // Enable chip standby
+    pinMode(_cs, OUTPUT);
+    digitalWrite(_cs, LOW);
+    
+    //mcan_enable_rx_array_flag(&mcan, 0);
     // MCP_ANY means filters don't matter
     if (_idmode == MCP_ANY) {
         init_Mask(FILTER_0, (CAN_EXT_MSG_ID | MSG_ID_ALLOW_ALL_MASK));
         init_Mask(FILTER_1, (CAN_STD_MSG_ID | MSG_ID_ALLOW_ALL_MASK));
     }
-    
     if (mcan_is_enabled(&mcan)) {
         Serial.println("MCAN is enabled!");
         return CAN_OK;
     }
-
     Serial.println("Something went wrong!!!!!!!!");
     return CAN_FAIL;
-    
-    
 };
 uint8_t SAMC21_CAN::init_Mask(uint8_t num, uint8_t ext, uint32_t ulData)
 {
@@ -136,7 +141,6 @@ uint8_t SAMC21_CAN::init_Mask(uint8_t num, uint8_t ext, uint32_t ulData)
         if (ext >= mcan.cfg.array_size_filt_ext) {
             return MCP2515_FAIL;
         }
-
     } else {
         id = 0x7ff;
         ulData &= id;
@@ -146,7 +150,6 @@ uint8_t SAMC21_CAN::init_Mask(uint8_t num, uint8_t ext, uint32_t ulData)
         }
     }
     mcan_filter_id_mask(&mcan, 0, num, id, ulData);
-    
     return MCP2515_OK;
 };              // Initilize Mask(s)
 uint8_t SAMC21_CAN::init_Mask(uint8_t num, uint32_t ulData)
@@ -161,7 +164,6 @@ uint8_t SAMC21_CAN::init_Filt(uint8_t num, uint8_t ext, uint32_t ulData)
         if (ext >= mcan.cfg.array_size_filt_ext) {
             return MCP2515_FAIL;
         }
-
     } else {
         mask = 0x7ff;
         if (ext >= mcan.cfg.array_size_filt_std) {
@@ -170,7 +172,6 @@ uint8_t SAMC21_CAN::init_Filt(uint8_t num, uint8_t ext, uint32_t ulData)
     }
     ulData &= mask;
     mcan_filter_id_mask(&mcan, 0, num, ulData, mask);
-    
     return MCP2515_OK;
 };              // Initilize Filter(s)
 uint8_t SAMC21_CAN::init_Filt(uint8_t num, uint32_t ulData)
@@ -194,7 +195,6 @@ uint8_t SAMC21_CAN::setMode(uint8_t opMode)
     } else {
         return MCP2515_FAIL;
     }
-
     return MCP2515_OK;
 };                                        // Set operational mode
 

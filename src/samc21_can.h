@@ -32,12 +32,12 @@
 
 /* size of our custom Message RAM, in words */
 #define MSG_RAM_SIZE      ( \
-      RAM_ARRAY_SIZE_FILT_STD * MCAN_RAM_FILT_STD_SIZE \
-    + RAM_ARRAY_SIZE_FILT_EXT * MCAN_RAM_FILT_EXT_SIZE \
-    + RAM_FIFO_SIZE_RX0 * RAM_BUF_SIZE \
-    + RAM_ARRAY_SIZE_RX * RAM_BUF_SIZE \
-    + RAM_ARRAY_SIZE_TX * RAM_BUF_SIZE \
-    + RAM_FIFO_SIZE_TX * RAM_BUF_SIZE )
+                            RAM_ARRAY_SIZE_FILT_STD * MCAN_RAM_FILT_STD_SIZE \
+                            + RAM_ARRAY_SIZE_FILT_EXT * MCAN_RAM_FILT_EXT_SIZE \
+                            + RAM_FIFO_SIZE_RX0 * RAM_BUF_SIZE \
+                            + RAM_ARRAY_SIZE_RX * RAM_BUF_SIZE \
+                            + RAM_ARRAY_SIZE_TX * RAM_BUF_SIZE \
+                            + RAM_FIFO_SIZE_TX * RAM_BUF_SIZE )
 
 #define MSG_LEN_1_CAN     8
 #define MSG_LEN_1_CAN_FD  64
@@ -49,8 +49,7 @@
 #define FILTER_0          0
 #define FILTER_1          1
 
-struct frame_desc
-{
+struct frame_desc {
     uint32_t id;
     uint8_t data[64];
     uint8_t len;
@@ -101,11 +100,12 @@ public:
 
 
 private:
-    uint32_t mcan_msg_ram[MSG_RAM_SIZE] __attribute__ ((aligned (4)));
+    uint32_t mcan_msg_ram[MSG_RAM_SIZE] __attribute__((aligned(4)));
     uint32_t mcan_msg_ram_size = ARRAY_SIZE(mcan_msg_ram);
     uint8_t _idmode;
     uint8_t _mode;
-    
+    uint8_t _cs;
+
 };
 
 
