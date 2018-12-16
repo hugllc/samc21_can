@@ -5,6 +5,7 @@
  * @brief      The include file for using the SAMC
  * @details
  */
+#ifdef ARDUINO_ARCH_SAMD
 #ifndef _SAMC_CAN_H_
 #define _SAMC_CAN_H_
 
@@ -110,3 +111,4 @@ private:
 
 
 #endif //define _SAMC_CAN_H_
+#endif //ifdef ARDUINO_ARCH_SAMD

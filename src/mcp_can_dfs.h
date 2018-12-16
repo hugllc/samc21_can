@@ -21,6 +21,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-
   1301  USA
 */
+#ifdef ARDUINO_ARCH_SAMD
 #ifndef _MCP2515DFS_H_
 #define _MCP2515DFS_H_
 
@@ -461,6 +462,8 @@
 #define CAN_MAX_CHAR_IN_MESSAGE (8)
 
 #endif
+#endif //ifdef ARDUINO_ARCH_SAMD
+
 /*********************************************************************************************************
   END FILE
 *********************************************************************************************************/

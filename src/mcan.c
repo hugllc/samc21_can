@@ -44,6 +44,7 @@ Atmel's SAMC21 register definition include files have a different and peculiar s
 /** \addtogroup can_module
  *@{*/
 
+#ifdef ARDUINO_ARCH_SAMD
 /*----------------------------------------------------------------------------
  *        Headers
  *----------------------------------------------------------------------------*/
@@ -749,4 +750,5 @@ uint8_t mcan_dequeue_received_msg(struct mcan_set *set, uint8_t fifo,
 }
 
 /**@}*/
+#endif //ifdef ARDUINO_ARCH_SAMD
 

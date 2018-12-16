@@ -45,7 +45,7 @@ Atmel's SAMC21 register definition include files have a different and peculiar s
  * Controller Area Network with Flexible Data-rate.
  * Interface for configuring and using the MCAN peripheral.
  */
-
+#ifdef ARDUINO_ARCH_SAMD
 #ifndef _MCAN_H_
 #define _MCAN_H_
 
@@ -469,3 +469,4 @@ uint8_t mcan_dequeue_received_msg(struct mcan_set *set, uint8_t fifo,
 
 #endif /* #ifndef _MCAN_H_ */
 
+#endif //ifdef ARDUINO_ARCH_SAMD

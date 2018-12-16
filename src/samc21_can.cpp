@@ -5,7 +5,7 @@
  * @brief      The main class for HUGnetCANLib.
  * @details
  */
-
+#ifdef ARDUINO_ARCH_SAMD
 #include "samc21_can.h"
 #include "Arduino.h"
 
@@ -290,3 +290,5 @@ void CAN1_Handler(void)
     }
 }
 */
+
+#endif //ifdef ARDUINO_ARCH_SAMD

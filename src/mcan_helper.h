@@ -1,3 +1,4 @@
+#ifdef ARDUINO_ARCH_SAMD
 #ifndef _MCAN_HELPER_
 #define _MCAN_HELPER_
 /*
@@ -108,4 +109,5 @@ This was retrieved from http://github.com/majbthrd/SAMC21demoCAN 11/13/2017 SLP
 #define MCAN_RAM_TX_EVT_SIZE (2u) /**< \brief Size of the Tx Event Element, in words */
 
 #endif
+#endif //ifdef ARDUINO_ARCH_SAMD
 
