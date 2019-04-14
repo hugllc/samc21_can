@@ -24,3 +24,5 @@ run_test
 
 *.map
 
+*.elf
+*.bin
