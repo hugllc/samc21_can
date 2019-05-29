@@ -19,9 +19,9 @@ SAMC21_CAN *samc21_can_use_object[2];
 *
 * @return void
 */
-SAMC21_CAN::SAMC21_CAN(uint8_t _CS, uint8_t canid, uint8_t cantx, uint8_t canrx)
+SAMC21_CAN::SAMC21_CAN(uint8_t _CS, uint8_t canid, uint8_t cantx)
     : rx_ded_buffer_data(false), _idmode(MCP_ANY), _mode(MCP_LOOPBACK), _cs(_CS), _canid(canid),
-      _cantx(cantx), _canrx(canrx)
+      _cantx(cantx), _canrx(cantx + 1)
 {
     if (_canid == ID_CAN0) {
         samc21_can_use_object[0] = this;
