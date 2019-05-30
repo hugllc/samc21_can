@@ -19,9 +19,9 @@ SAMC21_CAN *samc21_can_use_object[2];
 *
 * @return void
 */
-SAMC21_CAN::SAMC21_CAN(uint8_t _CS, uint8_t canid, uint8_t cantx)
+SAMC21_CAN::SAMC21_CAN(uint8_t _CS, uint8_t canid, uint8_t cantx, uint8_t group)
     : rx_ded_buffer_data(false), _idmode(MCP_ANY), _mode(MCP_LOOPBACK), _cs(_CS), _canid(canid),
-      _cantx(cantx), _canrx(cantx + 1)
+      _cantx(cantx), _canrx(cantx + 1), _group(group & 1)
 {
     if (_canid == ID_CAN0) {
         samc21_can_use_object[0] = this;
@@ -86,11 +86,11 @@ regs :
         quanta_sync_jump : 3 + 1,
         quanta_sync_jump_fd : 3 + 1,
     };
-    PORT->Group[0].DIRSET.reg = (1 << _cantx);
-    PORT->Group[0].DIRCLR.reg = (1 << _canrx);
-    PORT->Group[0].PINCFG[_cantx].reg = PORT_PINCFG_INEN | PORT_PINCFG_PMUXEN;
-    PORT->Group[0].PINCFG[_canrx].reg = PORT_PINCFG_INEN | PORT_PINCFG_PMUXEN;
-    PORT->Group[0].PMUX[_cantx / 2].reg = PORT_PMUX_PMUXE(6 /* CAN0 G */) | PORT_PMUX_PMUXO(6 /* CAN0 G */); /* have to write odd and even at once */
+    PORT->Group[_group].DIRSET.reg = (1 << _cantx);
+    PORT->Group[_group].DIRCLR.reg = (1 << _canrx);
+    PORT->Group[_group].PINCFG[_cantx].reg = PORT_PINCFG_INEN | PORT_PINCFG_PMUXEN;
+    PORT->Group[_group].PINCFG[_canrx].reg = PORT_PINCFG_INEN | PORT_PINCFG_PMUXEN;
+    PORT->Group[_group].PMUX[_cantx / 2].reg = PORT_PMUX_PMUXE(6 /* CAN0 G */) | PORT_PMUX_PMUXO(6 /* CAN0 G */); /* have to write odd and even at once */
     switch (mcan_cfg.id) {
         case ID_CAN0:
             GCLK->PCHCTRL[CAN0_GCLK_ID].reg = GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0;

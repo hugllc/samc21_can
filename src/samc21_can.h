@@ -76,7 +76,7 @@ public:
     *
     * @return void
     */
-    SAMC21_CAN(uint8_t _CS, uint8_t canid = ID_CAN0, uint8_t cantx = 24);
+    SAMC21_CAN(uint8_t _CS, uint8_t canid = ID_CAN0, uint8_t cantx = 24, uint8_t group = 0);
     uint8_t begin(uint8_t idmodeset, uint32_t speedset, uint8_t clockset);
     uint8_t init_Mask(uint8_t num, uint8_t ext, uint32_t ulData);              // Initilize Mask(s)
     uint8_t init_Mask(uint8_t num, uint32_t ulData);                          // Initilize Mask(s)
@@ -108,6 +108,7 @@ private:
     uint8_t _canid;
     uint8_t _cantx;
     uint8_t _canrx;
+    uint8_t _group;
 
 };
 
