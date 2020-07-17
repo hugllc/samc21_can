@@ -79,7 +79,7 @@ void loop()
     uint8_t buf[8];
     uint8_t i;
     
-    ret = can.readMsgBuf(id, len, buffer);
+    ret = can.readMsgBuf(&id, &len, buf);
     if (ret == CAN_OK) {
         Serial.print("Got a message from: ");
         Serial.print(id);
