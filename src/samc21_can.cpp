@@ -23,9 +23,16 @@ SAMC21_CAN *samc21_can_use_object[2];
 * @return void
 */
 SAMC21_CAN::SAMC21_CAN(uint8_t _CS, uint8_t canid, uint8_t cantx, uint8_t group)
-    : rx_ded_buffer_data(false), _idmode(MCP_ANY), _mode(MCP_LOOPBACK), _cs(_CS), _canid(canid),
-      _cantx(cantx), _canrx(cantx + 1), _group(group & 1)
+    : rx_ded_buffer_data(false), _idmode(MCP_ANY), _mode(MCP_LOOPBACK), _cs(_CS), _canid(canid)
 {
+    if (cantx > 31) {
+        while (cantx > 31) cantx -= 32;
+        group = 1;
+    }
+    _cantx = cantx;
+    _canrx = _cantx + 1;
+    _group = group & 1;
+
     if (_canid == ID_CAN0) {
         samc21_can_use_object[0] = this;
     } else if (_canid == ID_CAN1) {
