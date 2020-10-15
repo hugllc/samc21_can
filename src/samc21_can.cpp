@@ -13,9 +13,12 @@ SAMC21_CAN *samc21_can_use_object[2];
 
 
 /**
-* @brief Checks for the presence of a connector id
+* Constructor
 *
-* This function never returns if there is no connector id.
+* @param _CS the number of the chip select pin for the CAN chip.
+* @param canid The CAN port to use.  Either ID_CAN0 or ID_CAN1
+* @param cantx The number of the pin to use, so for PB10 this value would be 10.
+* @param group The pin group.  0 for port A and 1 for port B.
 *
 * @return void
 */
@@ -26,7 +29,7 @@ SAMC21_CAN::SAMC21_CAN(uint8_t _CS, uint8_t canid, uint8_t cantx, uint8_t group)
     if (_canid == ID_CAN0) {
         samc21_can_use_object[0] = this;
     } else if (_canid == ID_CAN1) {
-        samc21_can_use_object[0] = this;
+        samc21_can_use_object[1] = this;
     }
 };
 
@@ -98,7 +101,7 @@ regs :
             //NVIC_EnableIRQ(CAN0_IRQn);
             break;
         case ID_CAN1:
-            GCLK->PCHCTRL[CAN1_GCLK_ID].reg = GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK1;
+            GCLK->PCHCTRL[CAN1_GCLK_ID].reg = GCLK_PCHCTRL_CHEN | GCLK_PCHCTRL_GEN_GCLK0;
             MCLK->AHBMASK.reg |= MCLK_AHBMASK_CAN1;
             //NVIC_EnableIRQ(CAN0_IRQn);
             break;
