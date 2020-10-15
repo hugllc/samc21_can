@@ -17,7 +17,7 @@ SAMC21_CAN *samc21_can_use_object[2];
 *
 * @param _CS the number of the chip select pin for the CAN chip.
 * @param canid The CAN port to use.  Either ID_CAN0 or ID_CAN1
-* @param cantx The number of the pin to use, so for PB10 this value would be 10.
+* @param cantx The number of the pin to use.  This can be a raw pin number, or a PIN_PXXX macro.
 * @param group The pin group.  0 for port A and 1 for port B.
 *
 * @return void
