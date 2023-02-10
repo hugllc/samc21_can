@@ -28,8 +28,9 @@
 #define RAM_ARRAY_SIZE_RX             (4u)
 /* no Tx Event FIFO in our Message RAM */
 #define RAM_ARRAY_SIZE_TX             (0u)
-#define RAM_FIFO_SIZE_TX              (4u)
-
+#ifndef RAM_FIFO_SIZE_TX
+# define RAM_FIFO_SIZE_TX              (4u)
+#endif
 
 /* size of our custom Message RAM, in words */
 #define MSG_RAM_SIZE      ( \
